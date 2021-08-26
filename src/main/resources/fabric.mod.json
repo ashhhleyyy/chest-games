@@ -1,9 +1,9 @@
 {
     "schemaVersion": 1,
-    "id": "${MOD_ID}",
+    "id": "chest_games",
     "version": "${version}",
-    "name": "${MOD_NAME}",
-    "description": "${MOD_DESCRIPTION}",
+    "name": "Chest Games",
+    "description": "Games in a chest GUI",
     "authors": [
         "Ash (ashisbored)"
     ],
@@ -11,7 +11,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "io.github.ashisbored.${MOD_ID}.${MOD_CLASS}"
+            "io.github.ashisbored.chest_games.ChestGames"
         ]
     },
     "depends": {

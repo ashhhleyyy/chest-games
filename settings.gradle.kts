@@ -12,7 +12,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "${MOD_NAME}"
+rootProject.name = "Chest Games"
 
 enableFeaturePreview("VERSION_CATALOGS")
 
