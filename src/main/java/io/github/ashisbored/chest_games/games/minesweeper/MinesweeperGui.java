@@ -64,6 +64,7 @@ public class MinesweeperGui extends LayeredGui {
     private final boolean[] mines = new boolean[WIDTH * HEIGHT];
     @SuppressWarnings("MismatchedReadAndWriteOfArray") // hmm, intellij seems to think I'm not reading it, when I clearly do.
     private final boolean[] flags = new boolean[WIDTH * HEIGHT];
+    private final boolean[] revealedSquares = new boolean[WIDTH * HEIGHT];
     private final int[] nearbyMinesCount = new int[WIDTH * HEIGHT];
 
     private int minesRemaining = MINE_COUNT;
@@ -85,7 +86,7 @@ public class MinesweeperGui extends LayeredGui {
                         if (this.locked) return;
 
                         if (type.isLeft) {
-                            this.revealSquare(index);
+                            this.revealSquare(index, true);
                         } else if (type.isRight) {
                             if (this.minesRemaining == 0) return;
                             this.flagSquare(index);
@@ -151,18 +152,50 @@ public class MinesweeperGui extends LayeredGui {
         }
     }
 
-    private void revealSquare(int index) {
+    private void revealSquare(int index, boolean playSound) {
         if (this.mines[index]) {
             // Failed
             this.failed();
             return;
         }
 
+        // Already revealed
+        if (this.revealedSquares[index]) {
+            return;
+        }
+
         int nearbyMines = this.nearbyMinesCount[index];
         this.numbersLayer.setSlot(index, itemForCount(nearbyMines));
         this.revealedCount++;
-        this.getPlayer().playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.MASTER, 1.0f, 1.0f);
+        this.revealedSquares[index] = true;
+        if (playSound) {
+            this.getPlayer().playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.MASTER, 1.0f, 1.0f);
+        }
+        if (nearbyMines == 0) {
+            this.revealNearbySquares(index);
+        }
         this.checkComplete();
+    }
+
+    private void revealNearbySquares(int index) {
+        for (int xOffset = -1; xOffset <= 1; xOffset++) {
+            for (int yOffset = -1; yOffset <= 1; yOffset++) {
+                if (xOffset == 0 && yOffset == 0) continue;
+
+                Vec2i pos = Vec2i.unpackAndOffset(index, WIDTH, xOffset, yOffset);
+
+                if (pos.x() < 0 || pos.x() >= WIDTH
+                        || pos.y() < 0 || pos.y() >= HEIGHT) {
+                    // Skip positions that are out-of-bounds
+                    continue;
+                }
+
+                int index1 = pos.pack(WIDTH);
+                if (!this.mines[index1]) {
+                    this.revealSquare(index1, false);
+                }
+            }
+        }
     }
 
     private int countSurroundingMines(int pos) {
