@@ -61,7 +61,9 @@ public class MinesweeperGui extends LayeredGui {
     private final Layer flagsLayer;
     private final Layer statsLayer;
 
+    private boolean minesGenerated = false;
     private final boolean[] mines = new boolean[WIDTH * HEIGHT];
+
     @SuppressWarnings("MismatchedReadAndWriteOfArray") // hmm, intellij seems to think I'm not reading it, when I clearly do.
     private final boolean[] flags = new boolean[WIDTH * HEIGHT];
     private final boolean[] revealedSquares = new boolean[WIDTH * HEIGHT];
@@ -75,10 +77,8 @@ public class MinesweeperGui extends LayeredGui {
     public MinesweeperGui(ServerPlayerEntity player) {
         super(ScreenHandlerType.GENERIC_9X6, player, true);
         this.setTitle(new LiteralText("Minesweeper"));
-        this.populateMines();
         this.numbersLayer = new Layer(HEIGHT, WIDTH);
 
-        // Fill the board with test markings
         for (int i = 0; i < this.mines.length; i++) {
             this.numbersLayer.setSlot(i, new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
                     .setName(new LiteralText(""))
@@ -93,8 +93,6 @@ public class MinesweeperGui extends LayeredGui {
                         }
                     })
             );
-            int bombCount = this.countSurroundingMines(i);
-            this.nearbyMinesCount[i] = bombCount;
         }
 
         this.flagsLayer = new Layer(HEIGHT, WIDTH);
@@ -153,6 +151,8 @@ public class MinesweeperGui extends LayeredGui {
     }
 
     private void revealSquare(int index, boolean playSound) {
+        this.checkMinesGenerated(index);
+
         if (this.mines[index]) {
             // Failed
             this.failed();
@@ -222,11 +222,25 @@ public class MinesweeperGui extends LayeredGui {
         return mineCount;
     }
 
-    private void populateMines() {
+    private void checkMinesGenerated(int index) {
+        if (this.minesGenerated) return;
+        this.populateMines(index);
+        this.populateMineCounts();
+        this.minesGenerated = true;
+    }
+
+    private void populateMineCounts() {
+        for (int i = 0; i < this.mines.length; i++) {
+            int bombCount = this.countSurroundingMines(i);
+            this.nearbyMinesCount[i] = bombCount;
+        }
+    }
+
+    private void populateMines(int safeIndex) {
         Random rand = new Random();
         for (int m = 0; m < MINE_COUNT; m++) {
             int i = rand.nextInt(this.mines.length);
-            while (this.mines[i]) {
+            while (i == safeIndex || this.mines[i]) {
                 i = rand.nextInt(this.mines.length);
             }
             this.mines[i] = true;
