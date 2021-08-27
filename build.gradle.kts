@@ -30,6 +30,10 @@ dependencies {
     // Polymer
     modImplementation(libs.polymer)
     include(libs.polymer)
+
+    // server-translations-api
+    modImplementation(libs.server.translations.api)
+    include(libs.server.translations.api)
 }
 
 tasks.processResources {
