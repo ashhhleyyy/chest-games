@@ -8,7 +8,10 @@ version = "1.0.0"
 group = "io.github.ashisbored"
 
 repositories {
-
+    maven {
+        name = "Nucleoid"
+        url = uri("https://maven.nucleoid.xyz/")
+    }
 }
 
 dependencies {
@@ -19,6 +22,14 @@ dependencies {
     // Fabric
     modImplementation(libs.fabric.loader)
     modImplementation(libs.fabric.api)
+
+    // SGui
+    modImplementation(libs.sgui)
+    include(libs.sgui)
+
+    // Polymer
+    modImplementation(libs.polymer)
+    include(libs.polymer)
 }
 
 tasks.processResources {

@@ -14,6 +14,9 @@
             "io.github.ashisbored.chest_games.ChestGames"
         ]
     },
+    "mixins": [
+        "chest_games.mixins.json"
+    ],
     "depends": {
         "fabricloader": ">=0.11.6",
         "fabric": "*",
