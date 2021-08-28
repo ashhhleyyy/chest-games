@@ -4,6 +4,7 @@
     "version": "${version}",
     "name": "Chest Games",
     "description": "Games in a chest GUI",
+    "license": "MIT",
     "authors": [
         "Ash (ashisbored)"
     ],
